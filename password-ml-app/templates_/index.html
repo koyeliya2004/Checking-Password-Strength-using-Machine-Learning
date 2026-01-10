@@ -1,35 +1,181 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Password ML App</title>
+    <meta charset="utf-8" />
+    <title>Password Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+        /* Use global dark background and make container full-bleed so no white is visible */
+        body { font-family: 'Poppins', Arial, sans-serif; /* background delegated to /static/style.css */ }
+        .container { width:100%; max-width:none; margin:0; padding:0; background:transparent; border-radius:0; box-shadow:none; min-height:100vh; }
+        input[type=text]{width:70%;padding:10px;margin-right:8px}
+        button{padding:10px 14px}
+        .result{margin-top:18px;padding:12px;background:transparent;border-left:4px solid rgba(255,255,255,0.06)}
+        ul{margin:6px 0 0 20px}
+        .warn{color:#b33}
+        .brand{letter-spacing:0.6px}
+        .brand,.brand+h2{font-weight:800}
+        h2.brand{font-size:30px}
+    </style>
 </head>
-<body>
+<body class="clear-bg">
+    <!-- Drifting neon orbs (red/green) -->
+    <div class="orb orb-red orb-1" aria-hidden="true"></div>
+    <div class="orb orb-green orb-2" aria-hidden="true"></div>
+    <div class="orb orb-red orb-3 orb-small" aria-hidden="true"></div>
+    <div class="orb orb-green orb-4 orb-small" aria-hidden="true"></div>
 
-<div class="container">
-    <h1>🔐 Password Intelligence System</h1>
-
-    <form method="POST">
-        <input type="text" name="password" placeholder="Enter password" required>
-        <button type="submit">Analyze</button>
-    </form>
+    <div class="hero">
+        <div class="login-wrap">
+                                <div class="login-card">
+                <div class="character-box">
+                    <div class="hud" aria-hidden="true"></div>
+                    <div id="robot" class="robot" aria-hidden="true">
+                        <svg viewBox="0 0 140 160" xmlns="http://www.w3.org/2000/svg" role="img">
+                            <defs>
+                                <linearGradient id="headGrad" x1="0" x2="1">
+                                    <stop offset="0%" stop-color="#073b9a" stop-opacity="0.98"/>
+                                    <stop offset="100%" stop-color="#3ea0ff" stop-opacity="0.95"/>
+                                </linearGradient>
+                            </defs>
+                            <g transform="translate(20,20)">
+                                <!-- ghost body -->
+                                <ellipse cx="50" cy="70" rx="48" ry="52" fill="url(#headGrad)"/>
+                                <rect x="2" y="50" width="96" height="55" fill="url(#headGrad)"/>
+                                <!-- wavy bottom -->
+                                <path d="M2,105 Q15,95 28,105 T54,105 T80,105 T98,105 L98,70 L2,70 Z" fill="url(#headGrad)"/>
+                                <!-- eyes -->
+                                <ellipse cx="35" cy="65" rx="8" ry="12" fill="#fff" opacity="0.95"/>
+                                <ellipse cx="65" cy="65" rx="8" ry="12" fill="#fff" opacity="0.95"/>
+                                <circle class="pupil" cx="35" cy="68" r="4" fill="#1a1a2e"/>
+                                <circle class="pupil" cx="65" cy="68" r="4" fill="#1a1a2e"/>
+                                <!-- blush (blue-tinted) -->
+                                <circle cx="20" cy="75" r="6" fill="#3ea0ff" opacity="0.26"/>
+                                <circle cx="80" cy="75" r="6" fill="#3ea0ff" opacity="0.26"/>
+                            </g>
+                        </svg>
+                    </div>
+                    <h3>Hi!</h3>
+                </div>
+                <form method="POST" action="/result" target="_blank" class="login-form" id="analyzeForm">
+                    <input type="text" name="password" id="passwordInput" placeholder="Password" required autocomplete="off" />
+                    <button type="submit" class="btn-sign">Login</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
     {% if result %}
-    <div class="result">
-        <p><b>Input:</b> {{ result.input_password }}</p>
-        <p><b>Predicted Strength:</b> {{ result.predicted_strength }}</p>
-        <p><b>Improved Password:</b> {{ result.improved_password }}</p>
-        <p><b>Recommended Length:</b> {{ result.recommended_length }}</p>
-
-        <b>ML Suggestions:</b>
-        <ul>
-            {% for s in result.ml_suggestions %}
-                <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+    <div class="result-panel">
+        <div class="json-box">
+<pre>{
+  "estimated_crack_time": "{{ result.estimated_crack_time }}",
+  "input_password": "{{ result.input_password }}",
+  "issues_found": {{ result.issues_found | tojson }},
+  "predicted_strength": "{{ result.predicted_strength }}",
+  "suggestions": {{ result.suggestions | tojson }}
+}</pre>
+        </div>
     </div>
     {% endif %}
-</div>
+
+<script>
+// Cursor-follow, auto-blink, hide-face, wave and reactions
+(function(){
+  const robot = document.getElementById('robot');
+  const input = document.getElementById('passwordInput');
+  const form = document.getElementById('analyzeForm');
+  if(!robot) return;
+
+  // cursor-follow
+  let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+  window.addEventListener('mousemove', (e)=>{ mouseX = e.clientX; mouseY = e.clientY; }, {passive:true});
+
+  function tick(){
+    const rect = robot.getBoundingClientRect();
+    const anchorX = rect.left + rect.width/2;
+    const anchorY = rect.top + rect.height/2;
+    const maxX = 18, maxY = 18;
+    let dx = (mouseX - anchorX) / window.innerWidth * maxX * 2;
+    let dy = (mouseY - anchorY) / window.innerHeight * maxY * 2;
+    dx = Math.max(-maxX, Math.min(maxX, dx));
+    dy = Math.max(-maxY, Math.min(maxY, dy));
+    robot.style.transform = `translate(${dx}px, ${dy}px)`;
+
+    // pupils follow cursor
+    const pupils = robot.querySelectorAll('.pupil');
+    pupils.forEach((p)=>{
+      const rectp = p.getBoundingClientRect();
+      const px = rectp.left + rectp.width/2;
+      const py = rectp.top + rectp.height/2;
+      let pdx = (mouseX - px) / 20;
+      let pdy = (mouseY - py) / 20;
+      pdx = Math.max(-6, Math.min(6, pdx));
+      pdy = Math.max(-6, Math.min(6, pdy));
+      p.style.transform = `translate(${pdx}px, ${pdy}px)`;
+    });
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // auto blink
+  setInterval(()=>{
+    robot.classList.add('blink');
+    setTimeout(()=>robot.classList.remove('blink'), 160);
+  }, 4200 + Math.floor(Math.random()*2000));
+
+  // hide-face during typing/focus — avoid flicker: stay hidden while focused; show only on blur or when idle and not focused
+  let typingTimer = null;
+  if(input){
+    input.addEventListener('focus', ()=> {
+      robot.classList.add('hide-face');
+      clearTimeout(typingTimer);
+    });
+    input.addEventListener('blur', ()=> {
+      clearTimeout(typingTimer);
+      // small delay to avoid abrupt jumps on blur
+      setTimeout(()=> robot.classList.remove('hide-face'), 80);
+    });
+    input.addEventListener('input', ()=>{
+      robot.classList.add('hide-face');
+      clearTimeout(typingTimer);
+      // remove only after idle AND only if input is not focused
+      typingTimer = setTimeout(()=>{
+        if(document.activeElement !== input) robot.classList.remove('hide-face');
+      }, 1200);
+    });
+  }
+
+  // form submit: analyze and react, then wave and submit
+  if(form && input){
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      try{
+        const pw = input.value || '';
+        const resp = await fetch('/api/analyze', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password: pw})});
+        const data = await resp.json();
+        robot.classList.remove('react-weak','react-medium','react-strong');
+        if(data && data.predicted_strength){
+          const s = String(data.predicted_strength).toLowerCase();
+          if(s.includes('strong')) robot.classList.add('react-strong');
+          else if(s.includes('medium')) robot.classList.add('react-medium');
+          else robot.classList.add('react-weak');
+        }
+      }catch(err){/* ignore */}
+      // wave animation for a moment then submit
+      robot.classList.remove('hide-face');
+      robot.classList.add('wave');
+      setTimeout(()=> robot.classList.remove('wave'), 1400);
+      setTimeout(()=> form.submit(), 900);
+    });
+  }
+})();
+</script>
 
 </body>
 </html>

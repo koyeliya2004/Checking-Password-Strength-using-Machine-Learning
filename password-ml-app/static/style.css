@@ -1,43 +1,300 @@
-body {
-    font-family: Arial, sans-serif;
-    background: #0f172a;
-    color: #e5e7eb;
+:root{
+  --bg-dark:#1a1a2e;
+  --bg-card:#16213e;
+  --card:#252b48;
+  --muted:#9aa4b2;
+  /* primary accents adjusted to deep blue → light blue gradient */
+  --accent-pink:#073b9a; /* deep blue (kept name for compatibility) */
+  --accent-purple:#3ea0ff; /* light blue */
+  --accent1:#073b9a; /* used in some components for gradient start */
+  --accent2:#3ea0ff; /* used in some components for gradient end */
+  --accent-cyan:#4ecca3;
+  --accent-blue:#5b9af5;
+  --glass: rgba(255,255,255,0.04);
+  --card-glass: rgba(255,255,255,0.06);
+  --hero-glow: rgba(62,160,255,0.15);
+  --pulse: rgba(62,160,255,0.08);
+  --font-heading: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
-.container {
-    width: 400px;
-    margin: 80px auto;
-    background: #111827;
-    padding: 25px;
-    border-radius: 10px;
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family: var(--font-heading);
+  color: #e6eef6;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  overflow:hidden;
+  /* dark base with futuristic overlay */
+  background: #000;
+}
+body::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(255,0,150,0.35), transparent 45%),
+    radial-gradient(ellipse at 80% 70%, rgba(0,255,100,0.3), transparent 45%),
+    radial-gradient(ellipse at 50% 50%, rgba(0,150,255,0.25), transparent 50%);
+  filter: blur(60px);
+  animation: swirl 12s ease-in-out infinite;
+  z-index:0;
+}
+body::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:
+    linear-gradient(45deg, transparent 48%, rgba(255,0,150,0.15) 49%, rgba(255,0,150,0.15) 51%, transparent 52%),
+    linear-gradient(-45deg, transparent 48%, rgba(0,255,150,0.12) 49%, rgba(0,255,150,0.12) 51%, transparent 52%);
+  background-size: 80px 80px;
+  opacity:0.15;
+  animation: grid-flow 8s linear infinite;
+  z-index:0;
+}
+@keyframes swirl{
+  0%,100%{transform:rotate(0deg) scale(1)}
+  50%{transform:rotate(180deg) scale(1.1)}
+}
+@keyframes grid-flow{
+  0%{background-position:0 0}
+  100%{background-position:80px 80px}
 }
 
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
+body::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  /* top layer: external image if present; subsequent layers are procedural fallbacks */
+  background:
+    url('/static/future-bg.jpg') center/cover no-repeat fixed,
+    radial-gradient(circle at 15% 30%, rgba(30,150,255,0.36), transparent 28%),
+    radial-gradient(circle at 22% 50%, rgba(120,190,255,0.30), transparent 34%),
+    radial-gradient(circle at 80% 70%, rgba(40,100,255,0.28), transparent 28%),
+    radial-gradient(circle at 68% 60%, rgba(80,160,255,0.20), transparent 36%),
+    radial-gradient(circle at 50% 50%, rgba(20,90,255,0.12), transparent 42%);
+  filter: blur(30px) contrast(1.02) saturate(1.18);
+  opacity:0.98;
+  animation: bgPulse 18s ease-in-out infinite;
+  pointer-events:none;
+  z-index:0;
+} 
+@keyframes bgPulse{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+/* Optional: To use a licensed 'future' background image (e.g., from Shutterstock), place it at /static/future-bg.jpg. Ensure you have the proper license before adding commercial images. */
+/* layered subtle dark overlay to enhance readability while showing bg.jpg */
+body::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: linear-gradient(180deg, rgba(0,8,20,0.3) 0%, rgba(0,8,20,0.5) 100%);
+  pointer-events:none;
+  z-index:1;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: none;
-    margin-bottom: 10px;
+/* Optional: When you want the attached image to appear crisply as the page background, add the class `clear-bg` to the <body> element. This overrides the blurred/procedural layers and uses the image directly. */
+body.clear-bg::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: url('/static/bg.jpg') center/cover no-repeat fixed;
+  background-attachment: fixed;
+  filter: none;
+  opacity: 1;
+  z-index:0;
+  /* Disable any animation/transform so the background stays static */
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+body.clear-bg::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,0.35); /* subtle dark overlay to keep text readable */
+  pointer-events:none;
+  z-index:1;
+  /* Make sure overlay doesn't animate */
+  animation: none !important;
+  transform: none !important;
 }
 
-button {
-    width: 100%;
-    padding: 10px;
-    background: #6366f1;
-    border: none;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
+/* Also ensure the global background procedural layers won't animate when clear-bg is present */
+body.clear-bg::before, body.clear-bg::after { animation: none !important; }
+
+@keyframes bgShift{0%{filter:hue-rotate(0deg) saturate(1)}50%{filter:hue-rotate(12deg) saturate(1.05)}100%{filter:hue-rotate(0deg) saturate(1)}}
+@keyframes float1{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,40px)}}
+@keyframes float2{0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,-40px)}}
+
+.card{
+  position:relative;
+  width:820px;
+  max-width:94%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+  border-radius:28px;
+  padding:38px 48px;
+  box-shadow: 0 20px 60px rgba(2,6,23,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+  overflow:hidden;
+}
+.card-inner{position:relative;z-index:3}
+h1{margin:0 0 6px;font-size:34px}
+h2{margin:0 0 18px;font-weight:600;color:#f6f9fc}
+.analyze-form .input-wrap{display:flex;gap:12px;align-items:center}
+input[type=text]{flex:1;padding:14px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.08);background:var(--glass);color:inherit;font-size:16px;outline:none;transition:box-shadow .18s ease}
+input[type=text]:focus{box-shadow:0 6px 24px rgba(16,24,40,0.6);border-color:rgba(255,255,255,0.12)}
+.btn-analyze{padding:12px 20px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#fff;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(30,115,255,0.28);transition:transform .12s ease}
+.btn-analyze:active{transform:translateY(1px)}
+.output{margin-top:20px}
+.json-box{background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.05);font-family:Menlo,Monaco,monospace;color:#dff1ff}
+.json-box pre{margin:0;white-space:pre-wrap}
+
+/* drifting neon orbs - vivid red & green */
+.orb{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen;filter:blur(22px) saturate(1.2);opacity:0.95;z-index:0;will-change:transform,opacity}
+.orb::before{content:'';position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.9), rgba(255,255,255,0.2) 20%, transparent 45%);} 
+.orb{animation: orbPulse 6s ease-in-out infinite} 
+@keyframes orbPulse{0%{transform:scale(1);opacity:0.9}50%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:0.9}}
+
+/* blue orb tones (red & green changed to cool blue light) */
+.orb-red{width:180px;height:180px;background:radial-gradient(circle at 30% 30%, rgba(110,180,255,0.95), rgba(60,140,255,0.62) 30%, rgba(6,18,40,0.16) 60%);box-shadow:0 0 90px rgba(60,140,255,0.55)}
+.orb-green{width:160px;height:160px;background:radial-gradient(circle at 30% 30%, rgba(160,210,255,0.95), rgba(90,170,255,0.62) 30%, rgba(8,20,50,0.12) 60%);box-shadow:0 0 80px rgba(90,170,255,0.45)}
+.orb-small{width:90px;height:90px} 
+.orb-red{width:180px;height:180px;background:radial-gradient(circle at 30% 30%, rgba(110,180,255,0.95), rgba(60,140,255,0.62) 30%, rgba(6,18,40,0.16) 60%);box-shadow:0 0 90px rgba(60,140,255,0.55)}
+.orb-green{width:160px;height:160px;background:radial-gradient(circle at 30% 30%, rgba(160,210,255,0.95), rgba(90,170,255,0.62) 30%, rgba(8,20,50,0.12) 60%);box-shadow:0 0 80px rgba(90,170,255,0.45)}
+.orb-small{width:90px;height:90px}
+
+.orb-1{left:8%;top:22%;animation:moveOrbA 18s ease-in-out infinite}
+.orb-2{right:10%;top:22%;animation:moveOrbB 16s ease-in-out infinite}
+.orb-3{left:14%;bottom:26%;animation:moveOrbC 20s ease-in-out infinite}
+.orb-4{right:18%;bottom:30%;animation:moveOrbD 22s ease-in-out infinite}
+
+@keyframes moveOrbA{0%{transform:translate(0,0) scale(1)}25%{transform:translate(18px,-22px) scale(1.04)}50%{transform:translate(0,-36px) scale(1)}75%{transform:translate(-12px,18px) scale(.98)}100%{transform:translate(0,0) scale(1)}}
+@keyframes moveOrbB{0%{transform:translate(0,0) scale(1)}25%{transform:translate(-24px,-14px) scale(.98)}50%{transform:translate(-6px,26px) scale(1.03)}75%{transform:translate(14px,8px) scale(1)}100%{transform:translate(0,0) scale(1)}}
+@keyframes moveOrbC{0%{transform:translate(0,0) scale(1)}25%{transform:translate(20px,10px) scale(1.02)}50%{transform:translate(6px,-18px) scale(1)}75%{transform:translate(-18px,-6px) scale(.97)}100%{transform:translate(0,0) scale(1)}}
+@keyframes moveOrbD{0%{transform:translate(0,0) scale(1)}25%{transform:translate(-12px,18px) scale(1.03)}50%{transform:translate(18px,6px) scale(1)}75%{transform:translate(6px,-18px) scale(.98)}100%{transform:translate(0,0) scale(1)}}
+
+@keyframes drift1{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(18px) translateX(8px)}100%{transform:translateY(0) translateX(0)}}
+@keyframes drift2{0%{transform:translateY(0)}50%{transform:translateY(-14px) translateX(-6px)}100%{transform:translateY(0)}}
+@keyframes drift3{0%{transform:translateY(0)}50%{transform:translateY(10px)}100%{transform:translateY(0)}}
+
+/* Neon-style overlay lines for fractal vibe */
+.neon-lines{
+  position:absolute;inset:0;pointer-events:none;z-index:0;mix-blend-mode:screen;opacity:0.9;
 }
 
-.result {
-    margin-top: 20px;
-    background: #1f2933;
-    padding: 15px;
-    border-radius: 8px;
+/* decorative hero image (right-side) */
+.hero-image{
+  position:absolute;
+  right:120px;
+  bottom:30px;
+  width:420px;
+  max-width:36%;
+  height:auto;
+  border-radius:12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  opacity:0.95;
+  z-index:2;
+  object-fit:cover;
+  pointer-events:none;
 }
+.neon-lines::before,.neon-lines::after{
+  content:'';position:absolute;inset:0;background-repeat:no-repeat;background-position:center;filter:blur(36px);
+}
+.neon-lines::before{background-image:linear-gradient(90deg, rgba(30,115,255,0.12), rgba(180,215,255,0.06), rgba(72,219,251,0.06));opacity:0.9}
+.neon-lines::after{background-image:radial-gradient(circle at 50% 40%, rgba(255,255,255,0.02), transparent 25%);opacity:0.5}
+
+.character-box{text-align:center;margin-bottom:20px;position:relative;animation:none;}
+
+/* centered HUD ring behind robot */
+.hud{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:220px;height:220px;border-radius:50%;z-index:2;pointer-events:none;background:radial-gradient(circle at 50% 45%, rgba(62,160,255,0.12) 0%, rgba(0,0,0,0) 55%);box-shadow:0 0 48px rgba(62,160,255,0.14), inset 0 0 30px rgba(62,160,255,0.06);border:1px solid rgba(62,160,255,0.14);}
+.hud::before{content:'';position:absolute;inset:12%;border-radius:50%;box-shadow:0 0 34px rgba(62,160,255,0.12) inset, 0 0 20px rgba(62,160,255,0.08);background:conic-gradient(from 0deg, rgba(62,160,255,0.18) 0deg, rgba(62,160,255,0.02) 60deg, rgba(62,160,255,0.02) 120deg, rgba(62,160,255,0.18) 180deg, rgba(62,160,255,0.02) 240deg, rgba(62,160,255,0.02) 300deg, rgba(62,160,255,0.18) 360deg);mix-blend-mode:screen;opacity:0.85}
+.hud::after{content:'';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44%;height:44%;border-radius:50%;border:2px solid rgba(62,160,255,0.26);box-shadow:0 0 20px rgba(62,160,255,0.16) inset}
+@keyframes float-char{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.character-box h3{font-size:18px;font-weight:600;color:#fff;margin:12px 0 0;letter-spacing:0.5px}
+/* robot */
+.robot{position:relative;margin:0 auto;width:120px;height:120px;z-index:5;pointer-events:none;transition:transform .12s cubic-bezier(.2,.9,.2,1), opacity .12s linear;opacity:1;filter:drop-shadow(0 8px 20px rgba(30,115,255,0.35));will-change:transform,opacity;backface-visibility:hidden}
+.robot svg{width:100%;height:100%;display:block}
+.robot .pupil{transition:opacity .12s ease, transform .12s ease;will-change:transform,opacity;transform-origin:center center}
+
+/* blinking */
+.robot.blink .pupil{transform:scaleY(0.1);opacity:0.3}
+
+/* hide-face while typing */
+.robot.hide-face .pupil{opacity:0;transform:translateY(6px) scale(0.6)}
+.robot.hide-face{opacity:0.98}
+
+/* wave animation */
+.robot.wave{animation:robot-wave 900ms ease-in-out}
+@keyframes robot-wave{0%{transform:translateY(0)}40%{transform:translateY(-12px)}80%{transform:translateY(0)}100%{transform:translateY(0)}}
+
+/* reactions to password strength */
+.robot.react-weak{animation:shake 0.5s ease}
+.robot.react-strong{animation:bounce 0.6s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+
+/* responsive robot */
+@media (max-width:500px){
+  .robot{width:100px;height:100px}
+  .login-card{padding:40px 30px 35px}
+}
+
+/* responsive tweaks */
+@media (max-width:700px){
+  .login-card{padding:35px 28px;border-radius:16px;width:86%}
+  input[type=text]{padding:12px}
+  h1{font-size:28px}
+  .star{width:25px!important;height:25px!important}
+}
+
+/* --- Login-style layout --- */
+.hero{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;position:relative;z-index:3}
+.login-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+
+/* Refined login card: glass surface with neon rim and subtle gloss */
+.login-card{position:relative;z-index:4;width:540px;max-width:92%;border-radius:28px;padding:60px 48px;background:linear-gradient(180deg, rgba(9,18,34,0.72), rgba(22,36,56,0.64));backdrop-filter:blur(18px) saturate(1.15);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 30px 90px rgba(2,8,30,0.6), inset 0 1px 0 rgba(255,255,255,0.02);color:#e6eef6;border:1px solid rgba(62,160,255,0.08);overflow:visible;transition:transform .24s cubic-bezier(.2,.9,.2,1),box-shadow .24s ease}
+
+/* neon rim / glow */
+.login-card::before{content:'';position:absolute;inset:-3px;border-radius:inherit;background:linear-gradient(90deg, rgba(3,59,154,0.45), rgba(62,160,255,0.40));filter:blur(26px);opacity:0.95;z-index:-2;pointer-events:none}
+.login-card::after{content:'';position:absolute;left:0;right:0;top:0;height:38%;border-top-left-radius:inherit;border-top-right-radius:inherit;background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.00));z-index:2;pointer-events:none}
+
+.login-card:hover{transform:translateY(-6px);box-shadow:0 48px 140px rgba(3,59,154,0.28), inset 0 2px 10px rgba(255,255,255,0.02)}
+
+@media (max-width:700px){
+  .login-card{padding:40px 30px;border-radius:16px;width:86%}
+}
+
+@keyframes pulse-card{0%,100%{box-shadow:0 40px 120px rgba(0,150,255,0.22), 0 20px 60px rgba(60,90,130,0.12), 0 0 80px rgba(50,180,255,0.12), inset 0 1px 2px rgba(255,255,255,0.08)}50%{box-shadow:0 50px 140px rgba(0,150,255,0.30), 0 25px 70px rgba(60,90,130,0.18), 0 0 100px rgba(50,180,255,0.18), inset 0 1px 2px rgba(255,255,255,0.06)}}
+.brand{font-size:20px;margin:8px 0 0;color:#fff;letter-spacing:0.4px;font-weight:600;text-align:center}
+.login-form{display:flex;flex-direction:column;gap:16px;align-items:stretch;width:100%;margin-top:28px}
+.login-form input{width:100%;padding:14px 18px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:#e6eef6;outline:none;font-size:14px;transition:box-shadow .18s ease, border-color .18s ease, background .18s ease;box-sizing:border-box;box-shadow:inset 0 2px 10px rgba(0,0,0,0.55)}
+.login-form input::placeholder{color:rgba(255,255,255,0.28);font-weight:300}
+.login-form input:focus{border-color:rgba(62,160,255,0.6);box-shadow:0 8px 28px rgba(62,160,255,0.12), inset 0 2px 10px rgba(0,0,0,0.6);background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.008))}
+.btn-sign{width:100%;padding:14px;border-radius:28px;border:none;background:linear-gradient(90deg,var(--accent1) 0%,var(--accent2) 100%);color:#fff;font-size:15px;font-weight:800;cursor:pointer;box-shadow:0 18px 40px rgba(10,60,140,0.28), inset 0 -6px 18px rgba(255,255,255,0.02);transition:transform .22s cubic-bezier(.2,.9,.2,1),box-shadow .22s ease;text-transform:uppercase;letter-spacing:1px;margin-top:18px;padding-left:26px;padding-right:26px}
+.btn-sign:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 28px 56px rgba(10,60,140,0.36), inset 0 -6px 20px rgba(255,255,255,0.02)}
+.btn-sign:active{transform:translateY(0) scale(0.998);box-shadow:0 12px 30px rgba(10,60,140,0.30)}
+.btn-sign::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.3),transparent);opacity:0;transition:opacity 0.3s ease}
+.btn-sign:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 0 60px rgba(0,180,255,0.7), 0 16px 50px rgba(0,120,255,0.6), 0 4px 16px rgba(0,90,220,0.5)}
+.btn-sign:hover::before{opacity:1}
+.btn-sign:active{transform:translateY(-1px) scale(1.01)}
+.form-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-top:4px}
+.form-row label{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,0.7);cursor:pointer}
+.form-row input[type="checkbox"]{cursor:pointer;accent-color:var(--accent-purple)}
+.form-row a{color:var(--accent-blue);text-decoration:none;transition:color 0.2s ease}
+.form-row a:hover{color:var(--accent-cyan)}
+.login-links{display:flex;gap:18px;margin-top:12px;color:#666;font-size:13px}
+.login-links a{color:#666;text-decoration:none;transition:color 0.3s ease}
+.login-links a:hover{color:#ff6b9d}
+
+.result-panel{position:fixed;left:24px;bottom:24px;z-index:30}
+.result-panel .json-box{max-width:520px;opacity:0.95}
+
+@media (max-width:680px){
+  .login-card{width:88%;padding:35px 25px}
+}
+
+@media (max-width:1000px){
+  .hero-image{display:none}
+}
+.robot svg{width:100%;height:100%;display:block}
+.robot .pupil{transition:opacity 0.2s ease}

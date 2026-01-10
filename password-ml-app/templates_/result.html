@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Password Analysis</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <style>
+    /* result-specific overrides: dark glass panel with subtle gradient */
+    body{color:#e6eef6;font-family:'Poppins', Arial, sans-serif}
+    .result-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px}
+    .result-panel{width:980px;max-width:96%;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:28px;padding:48px;box-shadow:0 30px 90px rgba(2,8,30,0.6), inset 0 1px 0 rgba(255,255,255,0.02);position:relative;color:#e6eef6;backdrop-filter: blur(10px) saturate(1.1);border:1px solid rgba(255,255,255,0.03)}
+    .result-panel::before{content:'';position:absolute;inset:-12%;background:radial-gradient(circle at 30% 30%, rgba(30,150,255,0.06), transparent 22%), radial-gradient(circle at 70% 70%, rgba(80,180,255,0.04), transparent 20%);filter:blur(36px);z-index:0;border-radius:inherit;pointer-events:none}
+    .result-panel > *{position:relative;z-index:1}
+    .title{display:flex;align-items:center;gap:14px}
+    .title h1{font-size:48px;margin:0; background:linear-gradient(90deg,var(--accent1),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent}
+    .strength-large{font-size:72px;font-weight:900;margin:18px 0; color:#fff}
+    .meta{color:rgba(230,238,246,0.9);font-size:18px;margin-bottom:24px}
+    .cols{display:flex;gap:34px}
+    .col{flex:1}
+    .col h3{font-size:22px;margin:0 0 12px}
+    .issue{color:#ff6b6b;font-weight:700;margin:8px 0}
+    .suggestions{background:linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02)}
+    .back-link{position:absolute;left:28px;top:24px;color:#e6eef6;text-decoration:none;font-weight:700}
+  </style>
+</head>
+<body class="clear-bg">
+  <!-- Drifting neon orbs (red/green) -->
+  <div class="orb orb-red orb-1" aria-hidden="true"></div>
+  <div class="orb orb-green orb-2" aria-hidden="true"></div>
+  <div class="orb orb-red orb-3 orb-small" aria-hidden="true"></div>
+  <div class="orb orb-green orb-4 orb-small" aria-hidden="true"></div>
+  <div class="result-wrap">
+    <div class="result-panel">
+      <a class="back-link" href="/">← Back</a>
+      <div class="title"><div class="emoji" style="font-size:40px">🔐</div><h1>Password Analysis</h1></div>
+      <div class="meta">Input: <strong>{{ result.input_password }}</strong></div>
+      <div class="strength-large">Strength: <span class="pulse">{{ result.predicted_strength }}</span></div>
+      <div class="meta"><span class="emoji" style="font-size:20px">🕒</span>Estimated crack time: <strong>{{ result.estimated_crack_time }}</strong></div>
+      <div class="cols">
+        <div class="col">
+          <h3>Issues</h3>
+          {% if result.issues_found and result.issues_found|length > 0 %}
+            {% for it in result.issues_found %}
+              <div class="issue">{{ it }}</div>
+            {% endfor %}
+          {% else %}
+            <div>None</div>
+          {% endif %}
+        </div>
+        <div class="col">
+          <h3>Suggestions</h3>
+          <div class="suggestions">
+            {% if result.suggestions and result.suggestions|length > 0 %}
+              <ul>
+              {% for s in result.suggestions %}
+                <li>{{ s }}</li>
+              {% endfor %}
+              </ul>
+            {% else %}
+              <div>None</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

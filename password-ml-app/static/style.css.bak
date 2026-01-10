@@ -1,0 +1,88 @@
+:root{
+	--bg:#0e0f11;
+	--card:#0f1720;
+	--muted:#9aa4b2;
+	--accent1:#ff7a7a;
+	--accent2:#ffc371;
+	--glass: rgba(255,255,255,0.03);
+}
+html,body{height:100%;}
+body{
+	margin:0;
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	background: radial-gradient(1200px 400px at 10% 10%, rgba(255,122,122,0.06), transparent 8%),
+							radial-gradient(800px 300px at 90% 90%, rgba(255,195,113,0.04), transparent 12%),
+							var(--bg);
+	color: #e6eef6;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+.card{
+	position:relative;
+	width:820px;
+	max-width:94%;
+	background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+	border-radius:28px;
+	padding:38px 48px;
+	box-shadow: 0 10px 40px rgba(2,6,23,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+	overflow:hidden;
+}
+.card-inner{position:relative;z-index:3}
+h1{margin:0 0 6px;font-size:34px}
+h2{margin:0 0 18px;font-weight:600;color:#f6f9fc}
+.analyze-form .input-wrap{display:flex;gap:12px;align-items:center}
+input[type=text]{flex:1;padding:14px 18px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:var(--glass);color:inherit;font-size:16px;outline:none;transition:box-shadow .18s ease}
+input[type=text]:focus{box-shadow:0 6px 24px rgba(16,24,40,0.6);border-color:rgba(255,255,255,0.06)}
+.btn-analyze{padding:12px 20px;border-radius:999px;border:none;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#111;font-weight:700;cursor:pointer;box-shadow:0 6px 20px rgba(255,122,122,0.12);transition:transform .12s ease}
+.btn-analyze:active{transform:translateY(1px)}
+.output{margin-top:20px}
+.json-box{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);font-family:Menlo,Monaco,monospace;color:#dff1ff}
+.json-box pre{margin:0;white-space:pre-wrap}
+
+/* floating orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(28px);opacity:0.9;z-index:1}
+.orb-1{width:360px;height:360px;left:-80px;top:-90px;background:linear-gradient(135deg, rgba(255,122,122,0.18), rgba(255,195,113,0.12));animation: drift1 9s ease-in-out infinite}
+.orb-2{width:260px;height:260px;right:-60px;bottom:-80px;background:linear-gradient(135deg, rgba(110,196,255,0.08), rgba(173,119,255,0.06));animation: drift2 11s ease-in-out infinite}
+.orb-3{width:140px;height:140px;left:50%;transform:translateX(-50%);bottom:-40px;background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));animation: drift3 7s ease-in-out infinite}
+
+@keyframes drift1{0%{transform:translateY(0) translateX(0)}50%{transform:translateY(18px) translateX(8px)}100%{transform:translateY(0) translateX(0)}}
+@keyframes drift2{0%{transform:translateY(0)}50%{transform:translateY(-14px) translateX(-6px)}100%{transform:translateY(0)}}
+@keyframes drift3{0%{transform:translateY(0)}50%{transform:translateY(10px)}100%{transform:translateY(0)}}
+
+/* responsive tweaks */
+@media (max-width:700px){
+	.card{padding:22px;border-radius:18px}
+	input[type=text]{padding:12px}
+	h1{font-size:28px}
+}
+/* --- Login-style circular layout --- */
+.hero{display:flex;align-items:center;justify-content:center;height:100vh;padding:40px}
+.login-wrap{position:relative;width:560px;height:420px;display:flex;align-items:center;justify-content:center}
+.rings{position:absolute;inset:0;display:block}
+.ring{position:absolute;border-radius:50%;border:2px solid rgba(255,255,255,0.04);box-shadow:0 20px 60px rgba(2,6,23,0.6);transform-origin:center;}
+.r1{width:420px;height:420px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(0deg);border:6px solid rgba(255,122,122,0.08);filter:blur(10px);animation:spin 18s linear infinite}
+.r2{width:360px;height:360px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(30deg);border:4px solid rgba(255,195,113,0.06);filter:blur(12px);animation:spin-rev 22s linear infinite}
+.r3{width:300px;height:300px;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-20deg);border:3px solid rgba(255,255,255,0.03);filter:blur(6px);animation:float 7s ease-in-out infinite}
+
+.login-card{position:relative;z-index:4;width:340px;height:340px;border-radius:50%;background:linear-gradient(180deg,#ffffff,#fbfbfd);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 20px 60px rgba(2,6,23,0.06);}
+.brand{font-size:20px;margin:0 0 18px;color:#111;letter-spacing:0.6px}
+.login-form{display:flex;flex-direction:column;gap:14px;align-items:center;width:78%}
+.login-form input{width:100%;padding:12px 14px;border-radius:28px;border:1px solid rgba(16,24,40,0.06);background:#fff;color:#111;outline:none}
+.btn-sign{width:100%;padding:12px;border-radius:28px;border:none;background:linear-gradient(90deg,var(--accent1),var(--accent2));color:#111;font-weight:700;cursor:pointer;box-shadow:0 10px 30px rgba(255,122,122,0.08)}
+.login-links{display:flex;gap:18px;margin-top:12px;color:var(--muted);font-size:13px}
+.login-links a{color:var(--muted);text-decoration:none}
+
+.result-panel{position:fixed;left:24px;bottom:24px;z-index:30}
+.result-panel .json-box{max-width:520px;opacity:0.95}
+
+@keyframes spin{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes spin-rev{from{transform:translate(-50%,-50%) rotate(0deg)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
+@keyframes float{0%{transform:translate(-50%,-50%) rotate(-20deg) translateY(0)}50%{transform:translate(-50%,-50%) rotate(-20deg) translateY(18px)}100%{transform:translate(-50%,-50%) rotate(-20deg) translateY(0)}}
+
+@media (max-width:680px){
+	.login-wrap{width:94%;height:auto}
+	.login-card{width:92%;height:420px;border-radius:18px}
+	.rings{display:none}
+}
+
